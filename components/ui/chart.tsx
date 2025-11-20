@@ -18,7 +18,7 @@ const THEMES = {
 export type ChartConfig = Record<
   string,
   {
-    label?: React.ReactNode
+    label?: React.ReactElement
     icon?: React.ComponentType
     color?: string
     theme?: Record<keyof typeof THEMES, string>
@@ -64,7 +64,13 @@ export function ChartContainer({
         )}
       >
         <ChartStyle id={chartId} config={config} />
-        <ResponsiveContainer>{children}</ResponsiveContainer>
+        {children && (
+          <ResponsiveContainer>
+            {children as React.ReactElement}
+          </ResponsiveContainer>
+
+        )}
+
       </div>
     </ChartContext.Provider>
   )
@@ -84,14 +90,14 @@ export function ChartStyle({ id, config }: { id: string; config: ChartConfig }) 
             ([theme, prefix]) => `
 ${prefix} [data-chart=${id}] {
 ${entries
-  .map(([key, c]) => {
-    const color =
-      c.theme?.[theme as keyof typeof THEMES] ??
-      c.color ??
-      undefined
-    return color ? `--color-${key}: ${color};` : null
-  })
-  .join("\n")}
+                .map(([key, c]) => {
+                  const color =
+                    c.theme?.[theme as keyof typeof THEMES] ??
+                    c.color ??
+                    undefined
+                  return color ? `--color-${key}: ${color};` : null
+                })
+                .join("\n")}
 }
 `
           )
